@@ -19,7 +19,20 @@ namespace AppShop.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            return Ok(await _context.Countries.ToListAsync());
+            return Ok(await _context.Countries.ToListAsync().ConfigureAwait(false));
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetAsync(int id)
+        {
+
+            var country = await _context.Countries.FirstAsync(x => x.Id == id).ConfigureAwait(false);
+
+            if (country is null)
+                return NotFound();
+
+
+            return Ok(country);
         }
 
         [HttpPost]
@@ -28,6 +41,29 @@ namespace AppShop.API.Controllers
             await _context.Countries.AddAsync(country).ConfigureAwait(false);
             await _context.SaveChangesAsync().ConfigureAwait(false);
             return Ok(country);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> PutAsync([FromBody] Country country)
+        {
+            _context.Countries.Update(country);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+            return Ok(country);
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+
+            var country = await _context.Countries.FirstAsync(x => x.Id == id).ConfigureAwait(false);
+
+            if (country is null)
+                return NotFound();
+
+            _context.Countries.Remove(country);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            return NoContent();
         }
     }
 }
