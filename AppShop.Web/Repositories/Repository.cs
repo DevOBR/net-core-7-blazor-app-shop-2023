@@ -27,7 +27,7 @@ namespace AppShop.Web.Repositories
                 return new HttpResponseWrapper<T>(response, false, responseHttp);
             }
 
-            return new HttpResponseWrapper<T>(default, true, responseHttp);
+            return new HttpResponseWrapper<T>(default, !responseHttp.IsSuccessStatusCode, responseHttp);
         }
 
         public async Task<HttpResponseWrapper<object>> PostAsync<T>(string url, T model)
@@ -49,13 +49,41 @@ namespace AppShop.Web.Repositories
                 return new HttpResponseWrapper<TResponse>(response, false, responseHttp);
             }
 
-            return new HttpResponseWrapper<TResponse>(default, true, responseHttp);
+            return new HttpResponseWrapper<TResponse>(default, !responseHttp.IsSuccessStatusCode, responseHttp);
         }
 
         private async Task<T?> UnserializeAnswerAsync<T>(HttpResponseMessage responseHttp, JsonSerializerOptions jsonDefaultOptions)
         {
             var stringReponse = await responseHttp.Content.ReadAsStringAsync().ConfigureAwait(false);
             return JsonSerializer.Deserialize<T>(stringReponse, jsonDefaultOptions);
+        }
+
+        public async Task<HttpResponseWrapper<object>> DeleteAsync(string url)
+        {
+            var responseHttp = await _httpClient.DeleteAsync(url).ConfigureAwait(false);
+            return new HttpResponseWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
+        }
+
+        public async Task<HttpResponseWrapper<object>> PutAsync<T>(string url, T model)
+        {
+            var messageJson = JsonSerializer.Serialize(model);
+            var messageContent = new StringContent(messageJson, Encoding.UTF8, "application/json");
+            var responseHttp = await _httpClient.PutAsync(url, messageContent).ConfigureAwait(false);
+            return new HttpResponseWrapper<object>(null, !responseHttp.IsSuccessStatusCode, responseHttp);
+        }
+
+        public async Task<HttpResponseWrapper<TResponse>> PutAsync<T, TResponse>(string url, T model)
+        {
+            var messageJson = JsonSerializer.Serialize(model);
+            var messageContent = new StringContent(messageJson, Encoding.UTF8, "application/json");
+            var responseHttp = await _httpClient.PutAsync(url, messageContent).ConfigureAwait(false);
+            if (responseHttp.IsSuccessStatusCode)
+            {
+                var response = await UnserializeAnswerAsync<TResponse>(responseHttp, _jsonDefaultOptions);
+                return new HttpResponseWrapper<TResponse>(response, false, responseHttp);
+            }
+
+            return new HttpResponseWrapper<TResponse>(default, !responseHttp.IsSuccessStatusCode, responseHttp);
         }
     }
 }
