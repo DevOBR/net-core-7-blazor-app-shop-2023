@@ -1,12 +1,12 @@
 ﻿@page "/countries"
 @inject IRepository repository
+@inject SweetAlertService sweetAlertService 
 
 <h3>Countries</h3>
 
+<a class="btn btn-primary mb-3" href="/countries/create">New Country</a>
+
 <GenericList MyList="Countries">
-    <Loading>
-        <p>Loading...</p>
-    </Loading>
     <Body>
         <table class="table table-striped">
             <thead>
@@ -20,8 +20,8 @@
                 {
                     <tr>
                         <td>
-                            <a class="btn btn-warning">Edit</a>
-                            <button class="btn btn-danger">Delete</button>
+                            <a href="/countries/edit/@country.Id" class="btn btn-warning">Edit</a>
+                            <button class="btn btn-danger" @onclick="@(() => DeleteCountryAsync(country.Id))">Delete</button>
                         </td>
                         <td>
                             @country.Name
@@ -41,8 +41,48 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCountriesAsync();
+    }
+
+    private async Task DeleteCountryAsync(int Id)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+        {
+            Title = "Warning",
+            Text = "Do you want to delete the row?",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true,
+            CancelButtonText = "No",
+            ConfirmButtonText = "Yes"
+        });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHttp = await repository.DeleteAsync($"api/countries/{Id}");
+
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode != HttpStatusCode.NotFound)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+        }
+
+        await LoadCountriesAsync();
+    }
+
+    private async Task LoadCountriesAsync()
+    {
         var responseHttp = await repository.GetAsync<List<Country>>("api/countries");
         Countries = responseHttp.Response;
     }
+
 }
 
