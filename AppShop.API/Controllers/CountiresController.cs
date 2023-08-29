@@ -38,17 +38,49 @@ namespace AppShop.API.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody]Country country)
         {
-            await _context.Countries.AddAsync(country).ConfigureAwait(false);
-            await _context.SaveChangesAsync().ConfigureAwait(false);
-            return Ok(country);
+            try
+            {
+                await _context.Countries.AddAsync(country).ConfigureAwait(false);
+                await _context.SaveChangesAsync().ConfigureAwait(false);
+                return Ok(country);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest($"The country {country.Name} already exist.");
+                }
+
+                return BadRequest(dbUpdateException.Message);
+            }
+            catch(Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
         }
 
         [HttpPut]
         public async Task<IActionResult> PutAsync([FromBody] Country country)
         {
-            _context.Countries.Update(country);
-            await _context.SaveChangesAsync().ConfigureAwait(false);
-            return Ok(country);
+            try
+            {
+                _context.Countries.Update(country);
+                await _context.SaveChangesAsync().ConfigureAwait(false);
+                return Ok(country);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                if (dbUpdateException.InnerException!.Message.Contains("duplicate"))
+                {
+                    return BadRequest($"The country {country.Name} already exist.");
+                }
+
+                return BadRequest(dbUpdateException.Message);
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
         }
 
         [HttpDelete("{id:int}")]
