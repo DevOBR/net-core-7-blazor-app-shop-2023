@@ -1,13 +1,13 @@
 ﻿@inject SweetAlertService sweetAlertService
 
-<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation" />
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation"/>
 <EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <div class="mb-3">
-        <label>Country: </label>
+        <label>Category: </label>
         <div>
-            <InputText class="form-control" @bind-Value="@Country.Name"/>
-            <ValidationMessage For="@(() => Country.Name)" />
+            <InputText class="form-control" @bind-Value="@Category.Name" />
+            <ValidationMessage For="@(() => Category.Name)" />
         </div>
     </div>
     <button class="btn btn-primary" type="submit">Save Changes</button>
@@ -16,15 +16,16 @@
 
 @code {
 
-    private EditContext editContext = null!;
+    public EditContext editContext { get; set; } = null!;
 
     [Parameter]
     [EditorRequired]
-    public Country Country { get; set; } = null!;
+    public Category Category { get; set; } = null!;
 
     [Parameter]
     [EditorRequired]
     public EventCallback OnValidSubmit { get; set; }
+
 
     [Parameter]
     [EditorRequired]
@@ -34,14 +35,14 @@
 
     protected override void OnInitialized()
     {
-        editContext = new(Country);
+        editContext = new(Category);
     }
 
     private async Task OnBeforeInternalNavigation(LocationChangingContext locationChangingContext)
     {
         var formWasModified = editContext.IsModified();
 
-        if (!formWasModified || FormPostedSuccessfully)
+        if(!formWasModified || FormPostedSuccessfully)
         {
             return;
         }
@@ -56,6 +57,7 @@
             ConfirmButtonText = "Yes"
         });
 
+
         var confirm = !string.IsNullOrEmpty(result.Value);
 
         if (confirm)
@@ -65,5 +67,6 @@
 
         locationChangingContext.PreventNavigation();
     }
+
 }
 

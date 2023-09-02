@@ -53,9 +53,9 @@ namespace AppShop.API.Controllers
 
                 return BadRequest(dbUpdateException.Message);
             }
-            catch(Exception exception)
+            catch(Exception ex)
             {
-                return BadRequest(exception.Message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -64,7 +64,14 @@ namespace AppShop.API.Controllers
         {
             try
             {
-                _context.Countries.Update(country);
+                var countryResult = await _context.Countries.FirstAsync(x => x.Id == country.Id).ConfigureAwait(false);
+
+                if (country is null)
+                    return NotFound();
+
+                countryResult.Name = country.Name;
+
+                _context.Countries.Update(countryResult);
                 await _context.SaveChangesAsync().ConfigureAwait(false);
                 return Ok(country);
             }
@@ -77,9 +84,9 @@ namespace AppShop.API.Controllers
 
                 return BadRequest(dbUpdateException.Message);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                return BadRequest(exception.Message);
+                return BadRequest(ex.Message);
             }
         }
 
