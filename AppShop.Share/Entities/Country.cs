@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AppShop.Share.Entities
 {
@@ -11,6 +12,9 @@ namespace AppShop.Share.Entities
 		[MaxLength(100, ErrorMessage = "The field {0} can not have more than {1} characters.")]
 		public string Name { get; set; } = null!;
 
+		public ICollection<State>? States { get; set; }
+
+		public int StatesNumber => States == null ? 0 : States.Count;
 	}
 }
 

@@ -1,50 +1,48 @@
-﻿@page "/countries"
+﻿@page "/Categories"
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService 
 
-<h3>Countries</h3>
+<h3>Categories</h3>
 
-<a class="btn btn-primary mb-3" href="/countries/create">New Country</a>
+<a class="btn btn-primary mb-3" href="/categories/create">New Category</a>
 
-<GenericList MyList="Countries">
+<GenericList MyList="Categories">
     <Body>
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th></th>
-                    <th>Country</th>
+                    <th>Category</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var country in Countries!)
+                @foreach(var category in Categories!)
                 {
                     <tr>
                         <td>
-                            <a href="/countries/edit/@country.Id" class="btn btn-warning">Edit</a>
-                            <button class="btn btn-danger" @onclick="@(() => DeleteCountryAsync(country.Id))">Delete</button>
+                            <a class="btn btn-warning" href="/categories/edit/@category.Id">Edit</a>
+                            <button class="btn btn-danger" @onclick="@(() => DeleteCategoryAsync(category.Id))">Delete</button>
                         </td>
-                        <td>
-                            @country.Name
-                        </td>
+                        <td>@category.Name</td>
                     </tr>
                 }
             </tbody>
         </table>
     </Body>
     <NoRecords>
-        There are no Countries to show.
+        There are no Categories to show.
     </NoRecords>
 </GenericList>
 
 @code {
-    public List<Country>? Countries { get; set; }
+    public List<Category>? Categories { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadCountriesAsync();
+        await LoadCategoriesAsync();
     }
 
-    private async Task DeleteCountryAsync(int Id)
+    private async Task DeleteCategoryAsync(int id)
     {
         var result = await sweetAlertService.FireAsync(new SweetAlertOptions
         {
@@ -63,7 +61,7 @@
             return;
         }
 
-        var responseHttp = await repository.DeleteAsync($"api/countries/{Id}");
+        var responseHttp = await repository.DeleteAsync($"api/categories/{id}");
 
         if (responseHttp.Error)
         {
@@ -75,14 +73,14 @@
             }
         }
 
-        await LoadCountriesAsync();
+        await LoadCategoriesAsync();
+
     }
 
-    private async Task LoadCountriesAsync()
+    private async Task LoadCategoriesAsync()
     {
-        var responseHttp = await repository.GetAsync<List<Country>>("api/countries");
-        Countries = responseHttp.Response;
+        var responseHttp = await repository.GetAsync<List<Category>>("api/categories");
+        Categories = responseHttp.Response;
     }
-
 }
 

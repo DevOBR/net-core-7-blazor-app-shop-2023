@@ -1,25 +1,24 @@
-﻿@page "/countries/create"
+﻿@page "/categories/create"
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
 @inject NavigationManager navigationManager
 
-<h3>Create Country</h3>
+<h3>Create Category</h3>
 
-<CountryForm @ref="countryForm" Country="country" OnValidSubmit="CreateAsync" ReturnAction="Return" />
+<CategoryForm @ref="categoryForm" Category="category" OnValidSubmit="CreateAsync" ReturnAction="Return" />
 
 @code {
-    private Country country = new();
-    private CountryForm? countryForm;
+    private Category category = new();
+    private CategoryForm? categoryForm;
 
     private async Task CreateAsync()
     {
-        var responseHttp = await repository.PostAsync("api/countries", country);
+        var responseHttp = await repository.PostAsync("api/categories", category);
 
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
         }
 
         Return();
@@ -27,8 +26,8 @@
 
     private void Return()
     {
-        countryForm!.FormPostedSuccessfully = true;
-        navigationManager.NavigateTo("/countries");
+        categoryForm!.FormPostedSuccessfully = true;
+        navigationManager.NavigateTo("/categories");
     }
 }
 
