@@ -19,7 +19,18 @@ namespace AppShop.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            return Ok(await _context.Countries.ToListAsync().ConfigureAwait(false));
+            return Ok(await _context.Countries
+                .Include(x => x.States)
+                .ToListAsync().ConfigureAwait(false));
+        }
+
+        [HttpGet("full")]
+        public async Task<IActionResult> GetFullAsync()
+        {
+            return Ok(await _context.Countries
+                .Include(x => x.States!)
+                .ThenInclude(x => x.Cities)
+                .ToListAsync().ConfigureAwait(false));
         }
 
         [HttpGet("{id:int}")]
