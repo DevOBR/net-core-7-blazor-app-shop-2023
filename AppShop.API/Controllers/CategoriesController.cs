@@ -1,5 +1,4 @@
-﻿using System;
-using AppShop.API.Data;
+﻿using AppShop.API.Data;
 using AppShop.Share.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
