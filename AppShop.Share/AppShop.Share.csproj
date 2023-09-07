@@ -8,8 +8,13 @@
 
   <ItemGroup>
     <None Remove="Entities\" />
+    <None Remove="Reponses\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
+    <Folder Include="Reponses\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 </Project>
