@@ -1,4 +1,6 @@
 ﻿using AppShop.API.Data;
+using AppShop.API.Helper;
+using AppShop.Share.DTOs;
 using AppShop.Share.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +19,41 @@ namespace AppShop.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFullAsync()
+        public async Task<ActionResult> Get([FromQuery] PaginationDTO pagination)
         {
-            return Ok(await _context.States
-                .Include(x => x.Cities!).ToListAsync().ConfigureAwait(false));
+            var queryable = _context.States
+                .Include(x => x.Cities)
+                .Where(x => x.Country!.Id == pagination.Id)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+            return Ok(await queryable
+                .OrderBy(x => x.Name)
+                .Paginate(pagination)
+                .ToListAsync());
         }
+
+        [HttpGet("totalPages")]
+        public async Task<ActionResult> GetPages([FromQuery] PaginationDTO pagination)
+        {
+            var queryable = _context.States
+                .Where(x => x.Country!.Id == pagination.Id)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+            double count = await queryable.CountAsync();
+            double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
+            return Ok(totalPages);
+        }
+
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetAsync(int id)

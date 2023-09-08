@@ -22,10 +22,12 @@
   <ItemGroup>
     <None Remove="Data\" />
     <None Remove="Services\" />
+    <None Remove="Helper\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Services\" />
+    <Folder Include="Helper\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AppShop.Share\AppShop.Share.csproj">
