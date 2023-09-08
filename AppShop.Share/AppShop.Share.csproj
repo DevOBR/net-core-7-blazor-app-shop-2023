@@ -9,10 +9,12 @@
   <ItemGroup>
     <None Remove="Entities\" />
     <None Remove="Reponses\" />
+    <None Remove="DTOs\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\" />
     <Folder Include="Reponses\" />
+    <Folder Include="DTOs\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
