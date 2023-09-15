@@ -32,14 +32,30 @@ namespace AppShop.API.Data
                 _context.Categories.Add(new Category { Name = "Electronics" });
                 _context.Categories.Add(new Category { Name = "Entertainment" });
                 _context.Categories.Add(new Category { Name = "Home and Lifestyle" });
+                _context.Categories.Add(new Category { Name = "Clothing" });
+                _context.Categories.Add(new Category { Name = "Books" });
+                _context.Categories.Add(new Category { Name = "Sports" });
+                _context.Categories.Add(new Category { Name = "Toys" });
+                _context.Categories.Add(new Category { Name = "Food" });
+                _context.Categories.Add(new Category { Name = "Health and Beauty" });
+                _context.Categories.Add(new Category { Name = "Automotive" });
+                _context.Categories.Add(new Category { Name = "Garden and Outdoor" });
+                _context.Categories.Add(new Category { Name = "Jewelry" });
+                _context.Categories.Add(new Category { Name = "Movies" });
+                _context.Categories.Add(new Category { Name = "Music" });
+                _context.Categories.Add(new Category { Name = "Furniture" });
+                _context.Categories.Add(new Category { Name = "Appliances" });
+                _context.Categories.Add(new Category { Name = "Pet Supplies" });
+                _context.Categories.Add(new Category { Name = "Travel" });
+                _context.Categories.Add(new Category { Name = "Hobbies" });
                 await _context.SaveChangesAsync().ConfigureAwait(false);
             }
         }
 
         private async Task CheckCountriesAsync()
         {
-            //if (!_context.Countries.Any())
-            //{
+            if (!_context.Countries.Any())
+            {
                 Response responseCountries = await _apiService.GetListAsync<CountryResponse>("/v1", "/countries");
                 if (responseCountries.IsSuccess)
                 {
@@ -92,7 +108,7 @@ namespace AppShop.API.Data
                         }
                     }
                 }
-            //}
+            }
         }
     }
 }

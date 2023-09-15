@@ -17,7 +17,7 @@
     [Parameter]
     public int TotalPages { get; set; }
     [Parameter]
-    public int Radio { get; set; } = 5;
+    public int Radio { get; set; } = 9;
     [Parameter]
     public EventCallback<int> SelectedPage { get; set; }
 
@@ -36,9 +36,17 @@
             Enable = previousLinkEnable
         });
 
+        // current page is greater than 10 then
+        // increase i in 1
+
+        var maxPage = 10;
+
+        if (CurrentPage > 10)
+            maxPage = (CurrentPage - Radio) + Radio;
+
         for (int i = 1; i <= TotalPages; i++)
         {
-            if (i >= CurrentPage - Radio && i <= CurrentPage + Radio)
+            if (i >= CurrentPage - Radio && i <= maxPage)
             {
                 Links.Add(new PageModel
                 {
@@ -62,7 +70,7 @@
 
     private async Task InternalSelectedPage(PageModel pageModel)
     {
-        if (pageModel.Page == CurrentPage || pageModel.Page == 0)
+        if (pageModel.Page == CurrentPage || pageModel.Page == 0 || pageModel.Page == (TotalPages + 1))
         {
             return;
         }
