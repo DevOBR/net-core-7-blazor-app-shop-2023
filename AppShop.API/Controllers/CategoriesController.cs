@@ -1,4 +1,6 @@
 ﻿using AppShop.API.Data;
+using AppShop.API.Helper;
+using AppShop.Share.DTOs;
 using AppShop.Share.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,28 +11,44 @@ namespace AppShop.API.Controllers
     [Route("/api/categories")]
     public class CategoriesController : ControllerBase
     {
-        private readonly DataContext _dataContext;
+        private readonly DataContext _context;
 
-        public CategoriesController(DataContext dataContext)
+        public CategoriesController(DataContext context)
         {
-            _dataContext = dataContext;
+            _context = context;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync([FromQuery] PaginationDTO pagination)
         {
-            return Ok(await _dataContext.Categories.ToListAsync().ConfigureAwait(false));
+            var queryable = _context.Categories.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
+
+
+            return Ok(await queryable
+                .OrderBy(x => x.Name)
+                .Paginate(pagination)
+                .ToListAsync()
+                .ConfigureAwait(false));
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetAsync(int id)
+        [HttpGet("totalPages")]
+        public async Task<ActionResult> GetPagesAsync([FromQuery] PaginationDTO pagination)
         {
-            var category = await _dataContext.Categories.FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
+            var queryable = _context.Categories.AsQueryable();
 
-            if (category is null)
-                return NotFound();
+            if (!string.IsNullOrWhiteSpace(pagination.Filter))
+            {
+                queryable = queryable.Where(x => x.Name.ToLower().Contains(pagination.Filter.ToLower()));
+            }
 
-            return Ok(category);
+            double count = await queryable.CountAsync();
+            double totalPages = Math.Ceiling(count / pagination.RecordsNumber);
+            return Ok(totalPages);
         }
 
         [HttpPost]
@@ -38,8 +56,8 @@ namespace AppShop.API.Controllers
         {
             try
             {
-                await _dataContext.Categories.AddAsync(category).ConfigureAwait(false);
-                await _dataContext.SaveChangesAsync().ConfigureAwait(false);
+                await _context.Categories.AddAsync(category).ConfigureAwait(false);
+                await _context.SaveChangesAsync().ConfigureAwait(false);
                 return Ok(category);
             }
             catch (DbUpdateException dbUpdateException)
@@ -62,8 +80,8 @@ namespace AppShop.API.Controllers
         {
             try
             {
-                _dataContext.Categories.Update(category);
-                await _dataContext.SaveChangesAsync().ConfigureAwait(false);
+                _context.Categories.Update(category);
+                await _context.SaveChangesAsync().ConfigureAwait(false);
                 return Ok(category);
             }
             catch (DbUpdateException dbUpdateException)
@@ -84,13 +102,13 @@ namespace AppShop.API.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var category = await _dataContext.Categories.FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
+            var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
 
             if (category is null)
                 return NotFound();
 
-            _dataContext.Categories.Remove(category);
-            await _dataContext.SaveChangesAsync().ConfigureAwait(false);
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
 
             return NoContent();
         }
