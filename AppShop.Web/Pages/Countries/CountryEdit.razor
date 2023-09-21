@@ -1,7 +1,9 @@
 ﻿@page "/countries/edit/{Id:int}"
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
-@inject NavigationManager navigationManager 
+@inject NavigationManager navigationManager
+@attribute [Authorize(Roles = "Admin")]
+
 <h3>Country Edit</h3>
 
 @if (country is null)
@@ -10,7 +12,7 @@
 }
 else
 {
-    <CountryForm @ref="countryForm" Country="country" OnValidSubmit="EditAsync" ReturnAction="Return"/>
+    <CountryForm @ref="countryForm" Country="country" OnValidSubmit="EditAsync" ReturnAction="Return" />
 }
 
 @code {

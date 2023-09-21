@@ -2,16 +2,17 @@
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Admin")]
 
 <h3>Category Edit</h3>
 
-@if(category is null)
+@if (category is null)
 {
     <p>Loading...</p>
 }
 else
 {
-    <CategoryForm @ref="categoryForm" Category="category" OnValidSubmit="EditAsync" ReturnAction="Return"/>
+    <CategoryForm @ref="categoryForm" Category="category" OnValidSubmit="EditAsync" ReturnAction="Return" />
 }
 
 @code {
