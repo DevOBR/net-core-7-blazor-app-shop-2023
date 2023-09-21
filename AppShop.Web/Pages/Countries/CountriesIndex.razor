@@ -1,6 +1,7 @@
 ﻿@page "/countries"
 @inject IRepository repository
 @inject SweetAlertService sweetAlertService
+@attribute [Authorize(Roles = "Admin")]
 
 <h3>Countries</h3>
 
