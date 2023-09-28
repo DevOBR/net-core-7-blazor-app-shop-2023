@@ -2,13 +2,16 @@
 using AppShop.API.Helper;
 using AppShop.Share.DTOs;
 using AppShop.Share.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppShop.API.Controllers
 {
     [ApiController]
-	[Route("/api/countries")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Route("/api/countries")]
 	public class CountiresController : ControllerBase
 	{
         private readonly DataContext _context;
