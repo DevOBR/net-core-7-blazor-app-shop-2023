@@ -2,12 +2,15 @@
 using AppShop.API.Helper;
 using AppShop.Share.DTOs;
 using AppShop.Share.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppShop.API.Controllers
 {
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("/api/categories")]
     public class CategoriesController : ControllerBase
     {
