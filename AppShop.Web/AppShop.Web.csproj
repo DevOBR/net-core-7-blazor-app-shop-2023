@@ -28,6 +28,7 @@
     <None Remove="Pages\Cities\" />
     <None Remove="Auth\" />
     <None Remove="Helpers\" />
+    <None Remove="Pages\Auth\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Repositories\" />
@@ -37,6 +38,7 @@
     <Folder Include="Pages\Cities\" />
     <Folder Include="Auth\" />
     <Folder Include="Helpers\" />
+    <Folder Include="Pages\Auth\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AppShop.Share\AppShop.Share.csproj">
