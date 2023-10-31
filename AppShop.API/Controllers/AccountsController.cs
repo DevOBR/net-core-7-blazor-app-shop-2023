@@ -18,13 +18,16 @@ namespace AppShop.API.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IConfiguration _configuration;
         private readonly IFileStorage _fileStorage;
+        private readonly IMailHelper _mailHelper;
         private readonly string _container;
 
-        public AccountsController(IUserHelper userHelper, IConfiguration configuration, IFileStorage fileStorage)
+        public AccountsController(IUserHelper userHelper, IConfiguration configuration, IFileStorage fileStorage,
+            IMailHelper mailHelper)
         {
             _userHelper = userHelper;
             _configuration = configuration;
             _fileStorage = fileStorage;
+            _mailHelper = mailHelper;
             _container = "users";
         }
 
@@ -113,12 +116,49 @@ namespace AppShop.API.Controllers
             var result = await _userHelper.AddUserAsync(user, model.Password).ConfigureAwait(false);
             if (result.Succeeded)
             {
-                await _userHelper.AddUserToRoleAsync(user, user.UserType.ToString()).ConfigureAwait(false);
-                return Ok(BuildToken(user));
+                var myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
+                var tokenLink = Url.Action("ConfirmEmail", "accounts", new
+                {
+                    userid = user.Id,
+                    token = myToken
+                }, HttpContext.Request.Scheme, _configuration["UrlWEB"]);
+
+                var response = _mailHelper.SendMail(user.FullName, user.Email!,
+                    $"AppShop - Account Confirmation",
+                    $"<h1>AppShop - Account Confirmation</h1>" +
+                    $"<p>To enable your new user, please click on the next link: 'Confirm email':</p>" +
+                    $"<b><a href ={tokenLink}>Cofirm Email</a></b>");
+
+                if (response.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                return BadRequest(response.Message);
             }
 
             return BadRequest(result.Errors.FirstOrDefault());
         }
+
+        [HttpGet("ConfirmEmail")]
+        public async Task<ActionResult> ConfirmEmailAsync(string userId, string token)
+        {
+            token = token.Replace(" ", "+");
+            var user = await _userHelper.GetUserAsync(new Guid(userId));
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userHelper.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.FirstOrDefault());
+            }
+
+            return NoContent();
+        }
+
 
         [HttpPost("Login")]
         public async Task<ActionResult> Login([FromBody] LoginDTO model)
@@ -130,7 +170,17 @@ namespace AppShop.API.Controllers
                 return Ok(BuildToken(user));
             }
 
-            return BadRequest("Email o contraseña incorrectos.");
+            if (result.IsLockedOut)
+            {
+                return BadRequest("You have reached the maximun of attempts, you account has been locked, please try in 5 minutes");
+            }
+
+            if (result.IsNotAllowed)
+            {
+                return BadRequest("The user has not been enabled, you should follow the steps added in the mail that was sent to you.");
+            }
+
+            return BadRequest("Wrong Email or Password.");
         }
 
         private TokenDTO BuildToken(User user)
