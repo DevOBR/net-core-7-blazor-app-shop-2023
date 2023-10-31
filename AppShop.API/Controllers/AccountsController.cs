@@ -140,6 +140,38 @@ namespace AppShop.API.Controllers
             return BadRequest(result.Errors.FirstOrDefault());
         }
 
+        [HttpPost("ResedToken")]
+        public async Task<ActionResult> ResedToken([FromBody] EmailDTO model)
+        {
+            User user = await _userHelper.GetUserAsync(model.Email);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            //TODO: Improve code
+            var myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+            var tokenLink = Url.Action("ConfirmEmail", "accounts", new
+            {
+                userid = user.Id,
+                token = myToken
+            }, HttpContext.Request.Scheme, _configuration["UrlWEB"]);
+
+            var response = _mailHelper.SendMail(user.FullName, user.Email!,
+                    $"AppShop - Account Confirmation",
+                    $"<h1>AppShop - Account Confirmation</h1>" +
+                    $"<p>To enable your new user, please click on the next link: 'Confirm email':</p>" +
+                    $"<b><a href ={tokenLink}>Cofirm Email</a></b>");
+
+            if (response.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(response.Message);
+        }
+
+
         [HttpGet("ConfirmEmail")]
         public async Task<ActionResult> ConfirmEmailAsync(string userId, string token)
         {
