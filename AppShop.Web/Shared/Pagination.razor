@@ -17,7 +17,7 @@
     [Parameter]
     public int TotalPages { get; set; }
     [Parameter]
-    public int Radio { get; set; } = 9;
+    public int Radio { get; set; } = 9; // Amount per page + 1
     [Parameter]
     public EventCallback<int> SelectedPage { get; set; }
 
@@ -39,9 +39,9 @@
         // current page is greater than 10 then
         // increase i in 1
 
-        var maxPage = 10;
+        var maxPage = Radio + 1;
 
-        if (CurrentPage > 10)
+        if (CurrentPage > (Radio + 1))
             maxPage = (CurrentPage - Radio) + Radio;
 
         for (int i = 1; i <= TotalPages; i++)
