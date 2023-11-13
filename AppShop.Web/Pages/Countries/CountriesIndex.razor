@@ -13,7 +13,7 @@ else
         <div class="card-header">
             <span>
                 <i class="oi oi-globe"></i> Countries
-                <a class="btn btn-sm btn-primary float-end" href="/countries/create"><i class="oi oi-plus"></i> Add new Country</a>
+                <a class="btn btn-sm btn-primary float-end" @onclick="@(() => ShowModal())"><i class="oi oi-plus"></i> Add new Country</a>
             </span>
         </div>
         <div class="card-body">
@@ -56,7 +56,7 @@ else
                                     </td>
                                     <td>
                                         <a href="/countries/details/@country.Id" class="btn btn-info btn-sm"><i class="oi oi-list" /> Details</a>
-                                        <a href="/countries/edit/@country.Id" class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Edit</a>
+                                        <a @onclick=@(() => ShowModal(country.Id, true)) class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Edit</a>
                                         <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteCountryAsync(country.Id))><i class="oi oi-trash" /> Delete</button>
 
                                     </td>
@@ -90,9 +90,32 @@ else
     [SupplyParameterFromQuery]
     public string Filter { get; set; } = string.Empty;
 
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadAsync();
+    }
+
+    private async Task ShowModal(int id = 0, bool isEdit = false)
+    {
+        IModalReference modalReference;
+
+        if (isEdit)
+        {
+            modalReference = Modal.Show<CountryEdit>(string.Empty, new ModalParameters().Add("CountryId", id));
+        }
+        else
+        {
+            modalReference = Modal.Show<CountryCreate>();
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
     }
 
     private async Task DeleteCountryAsync(int Id)

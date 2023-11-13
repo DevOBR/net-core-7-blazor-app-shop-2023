@@ -6,8 +6,8 @@
 <div class="card">
     <div class="card-header">
         <span>
-            <i class="oi oi-globe"></i> Categories
-            <a class="btn btn-sm btn-primary float-end" href="/categories/create"><i class="oi oi-plus"></i> Add new Category</a>
+            <i class="oi oi-plus"></i> Categories
+            <a class="btn btn-sm btn-primary float-end" @onclick=@(() => ShowModalAsync())><i class="oi oi-plus"></i> Add new Category</a>
         </span>
     </div>
     <div class="card-body">
@@ -30,19 +30,19 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th></th>
                             <th>Category</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var category in Categories!)
                         {
                             <tr>
+                                <td>@category.Name</td>
                                 <td>
-                                    <a href="/categories/edit/@category.Id" class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Edit</a>
+                                    <a @onclick=@(() => ShowModalAsync(category.Id, true)) class="btn btn-warning btn-sm"><i class="oi oi-pencil" /> Edit</a>
                                     <button class="btn btn-danger btn-sm" @onclick=@(() => DeleteCategoryAsync(category.Id))><i class="oi oi-trash" /> Delete</button>
                                 </td>
-                                <td>@category.Name</td>
                             </tr>
                         }
                     </tbody>
@@ -67,11 +67,34 @@
     [SupplyParameterFromQuery]
     public string Filter { get; set; } = string.Empty;
 
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
     public List<Category>? Categories { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadAsync();
+    }
+
+    private async Task ShowModalAsync(int id = 0, bool isEdit = false)
+    {
+        IModalReference modalReference;
+
+        if (isEdit)
+        {
+            modalReference = Modal.Show<CategoryEdit>(string.Empty, new ModalParameters().Add("CategoryId", id));
+        }
+        else
+        {
+            modalReference = Modal.Show<CategoryCreate>();
+        }
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadAsync();
+        }
     }
 
     private async Task DeleteCategoryAsync(int id)

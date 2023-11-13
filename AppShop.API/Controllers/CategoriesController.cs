@@ -54,6 +54,19 @@ namespace AppShop.API.Controllers
             return Ok(totalPages);
         }
 
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult> Get(int id)
+        {
+            var category = await _context.Categories
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (category is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(category);
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] Category category)
         {

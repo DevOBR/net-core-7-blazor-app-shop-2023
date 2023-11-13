@@ -1,4 +1,4 @@
-﻿@page "/categories/edit/{id:int}"
+﻿@page "/categories/edit/{CategoryId:int}"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
@@ -19,12 +19,16 @@ else
     private CategoryForm? categoryForm;
     private Category? category;
 
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+
     [Parameter]
-    public int Id { get; set; }
+    public int CategoryId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHttp = await repository.GetAsync<Category>($"api/categories/{Id}");
+        var responseHttp = await repository.GetAsync<Category>($"api/categories/{CategoryId}");
 
         if (responseHttp.Error)
         {
@@ -53,6 +57,7 @@ else
             return;
         }
 
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
     }
 
