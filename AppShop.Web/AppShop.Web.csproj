@@ -30,6 +30,7 @@
     <None Remove="Auth\" />
     <None Remove="Helpers\" />
     <None Remove="Pages\Auth\" />
+    <None Remove="Pages\Products\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Repositories\" />
@@ -40,6 +41,7 @@
     <Folder Include="Auth\" />
     <Folder Include="Helpers\" />
     <Folder Include="Pages\Auth\" />
+    <Folder Include="Pages\Products\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AppShop.Share\AppShop.Share.csproj">
