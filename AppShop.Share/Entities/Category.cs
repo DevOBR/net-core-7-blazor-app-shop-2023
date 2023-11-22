@@ -12,6 +12,12 @@ namespace AppShop.Share.Entities
         [Required(ErrorMessage = "The field {0} is required.")]
         [MaxLength(100, ErrorMessage = "The field {0} can not have more than {1} characters.")]
         public string Name { get; set; } = null!;
+
+        public ICollection<ProductCategory>? ProductCategories { get; set; }
+
+        [Display(Name = "Products")]
+        public int ProductCategoriesNumber => ProductCategories == null ? 0 : ProductCategories.Count;
+
     }
 }
 
