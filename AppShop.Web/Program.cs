@@ -6,6 +6,7 @@ using CurrieTechnologies.Razor.SweetAlert2;
 using Microsoft.AspNetCore.Components.Authorization;
 using AppShop.Web.Auth;
 using Blazored.Modal;
+using MudBlazor.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddSweetAlert2();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredModal();
+builder.Services.AddMudServices();
 
 builder.Services.AddScoped<AuthenticationProviderJWT>();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthenticationProviderJWT>(x => x.GetRequiredService<AuthenticationProviderJWT>());
