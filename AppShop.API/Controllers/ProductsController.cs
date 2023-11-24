@@ -76,6 +76,63 @@ namespace AppShop.API.Controllers
             return Ok(product);
         }
 
+        [HttpPost("addImages")]
+        public async Task<ActionResult> PostAddImagesAsync(ImageDTO imageDTO)
+        {
+            var product = await _context.Products
+                .Include(x => x.ProductImages)
+                .FirstOrDefaultAsync(x => x.Id == imageDTO.ProductId).ConfigureAwait(false);
+            if (product is null)
+            {
+                return NotFound();
+            }
+
+            if (product.ProductImages is null)
+            {
+                product.ProductImages = new List<ProductImage>();
+            }
+
+            for (int i = 0; i < imageDTO.Images.Count; i++)
+            {
+                if (!imageDTO.Images[i].StartsWith("https://sales2023.blob.core.windows.net/products/"))
+                {
+                    var photoProduct = Convert.FromBase64String(imageDTO.Images[i]);
+                    imageDTO.Images[i] = await _fileStorage.SaveFileAsync(photoProduct, ".jpg", "products").ConfigureAwait(false);
+                    product.ProductImages!.Add(new ProductImage { Image = imageDTO.Images[i] });
+                }
+            }
+
+            _context.Update(product);
+            await _context.SaveChangesAsync();
+            return Ok(imageDTO);
+        }
+
+        [HttpPost("removeLastImage")]
+        public async Task<ActionResult> PostRemoveLastImageAsync(ImageDTO imageDTO)
+        {
+            var product = await _context.Products
+                .Include(x => x.ProductImages)
+                .FirstOrDefaultAsync(x => x.Id == imageDTO.ProductId).ConfigureAwait(false);
+            if (product is null)
+            {
+                return NotFound();
+            }
+
+            if (product.ProductImages is null || product.ProductImages.Count is 0)
+            {
+                return Ok();
+            }
+
+            var lastImage = product.ProductImages.LastOrDefault();
+            await _fileStorage.RemoveFileAsync(lastImage!.Image, "products").ConfigureAwait(false);
+            product.ProductImages.Remove(lastImage);
+            _context.Update(product);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+            imageDTO.Images = product.ProductImages.Select(x => x.Image).ToList();
+            return Ok(imageDTO);
+        }
+
+
         [HttpPost]
         public async Task<ActionResult> PostAsync(ProductDTO productDTO)
         {
