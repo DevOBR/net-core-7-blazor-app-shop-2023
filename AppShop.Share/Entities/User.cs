@@ -41,6 +41,8 @@ namespace AppShop.Share.Entities
         [Display(Name = "User")]
         public string FullName => $"{FirstName} {LastName}";
 
+        public ICollection<TemporalSale>? TemporalSales { get; set; }
+
     }
 }
 
