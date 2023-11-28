@@ -32,7 +32,7 @@
     <None Remove="Helpers\" />
     <None Remove="Pages\Auth\" />
     <None Remove="Pages\Products\" />
-    <None Remove="Pages\ShowCart\" />
+    <None Remove="Pages\Orders\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Repositories\" />
@@ -44,7 +44,7 @@
     <Folder Include="Helpers\" />
     <Folder Include="Pages\Auth\" />
     <Folder Include="Pages\Products\" />
-    <Folder Include="Pages\ShowCart\" />
+    <Folder Include="Pages\Orders\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AppShop.Share\AppShop.Share.csproj">
