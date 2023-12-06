@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json.Serialization;
+using AppShop.API;
 using AppShop.API.Data;
 using AppShop.API.Helper;
 using AppShop.API.Services;
@@ -13,12 +14,14 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// Scope cache services, Trasient doesn't cache 
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer("name=DockerConnection"));
 builder.Services.AddTransient<SeedDb>();
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<IFileStorage, FileStorage>();
 builder.Services.AddScoped<IMailHelper, MailHelper>();
+builder.Services.AddScoped<IOrdersHelper, OrdersHelper>();
 
 builder.Services.AddIdentity<User, IdentityRole>(x =>
 {

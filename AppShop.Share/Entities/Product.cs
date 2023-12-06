@@ -44,6 +44,8 @@ namespace AppShop.Share.Entities
 
         public ICollection<TemporalSale>? TemporalSales { get; set; }
 
+        public ICollection<SaleDetail>? SaleDetails { get; set; }
+
     }
 }
 

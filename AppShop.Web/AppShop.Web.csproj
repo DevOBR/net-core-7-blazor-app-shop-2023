@@ -45,6 +45,7 @@
     <Folder Include="Pages\Auth\" />
     <Folder Include="Pages\Products\" />
     <Folder Include="Pages\Orders\" />
+    <Folder Include="wwwroot/images/" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AppShop.Share\AppShop.Share.csproj">
