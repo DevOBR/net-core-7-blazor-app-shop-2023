@@ -35,13 +35,15 @@ namespace AppShop.Share.Entities
         public City? City { get; set; }
 
         [Display(Name = "City")]
-        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una {0}.")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must select a {0}.")]
         public int CityId { get; set; }
 
         [Display(Name = "User")]
         public string FullName => $"{FirstName} {LastName}";
 
         public ICollection<TemporalSale>? TemporalSales { get; set; }
+
+        public ICollection<Sale>? Sales { get; set; }
 
     }
 }
