@@ -52,4 +52,10 @@
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages/Auth/UserIndex.razor" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages/Auth/UserIndex.razor" />
+  </ItemGroup>
 </Project>
