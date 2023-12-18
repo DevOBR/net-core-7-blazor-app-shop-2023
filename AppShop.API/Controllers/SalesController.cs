@@ -119,7 +119,7 @@ namespace AppShop.API
             }
 
             var isAdmin = await _userHelper.IsUserInRoleAsync(user, UserType.Admin.ToString()).ConfigureAwait(false);
-            if (!isAdmin)
+            if (!isAdmin && saleDTO.OrderStatus != OrderStatus.Cancelled)
             {
                 return BadRequest("Only Admins are allowed.");
             }
